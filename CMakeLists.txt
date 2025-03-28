@@ -18,6 +18,11 @@ set(PLUGIN_FILES
 	${DISSECTOR_SRC}
 )
 
+target_include_directories(dissectors
+	SYSTEM PRIVATE
+		${GCRYPT_INCLUDE_DIRS}
+)
+
 set_source_files_properties(
 	${PLUGIN_FILES}
 	PROPERTIES
