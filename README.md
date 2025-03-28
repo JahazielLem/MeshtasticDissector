@@ -1,3 +1,9 @@
+
+🚧 Project in Development 🚧
+This project is currently under development. We will announce the official release once it is ready. Stay tuned!
+Let me know if you need any modification
+
+
 # MeshtasticDissector V0.0.1
 Wireshark dissector for LoRa Meshtastic
 
