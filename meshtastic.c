@@ -109,6 +109,7 @@ static int dissect_meshtastic(tvbuff_t* tvb,
                               packet_info* pinfo,
                               proto_tree* tree,
                               void* data) {
+  (void)data;
   int32_t current_offset = 0;
 
   // Set columns
