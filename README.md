@@ -12,6 +12,20 @@ Work in progress:
 - Postion fields
 - Add encryption key handler
 
+# Current fields supported
+- **Core**:
+  - [x] Bitfield
+  - [x] Portnum
+- **Text Message**:
+  - [x] Length
+  - [x] Emoji
+  - [x] Text
+- **Position**:
+  - [x]  Latitude
+  - [x]  Longitude
+  - [x]  Timestamp
+
+
 Stable dissector with:
 - Basic packet field
 - Key preferences list
