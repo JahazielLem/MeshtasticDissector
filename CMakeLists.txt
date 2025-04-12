@@ -18,8 +18,6 @@ set(PLUGIN_FILES
 	${DISSECTOR_SRC}
 )
 
-find_package(Gcrypt REQUIRED)
-
 target_include_directories(dissectors
 	SYSTEM PRIVATE
 		${GCRYPT_INCLUDE_DIRS}
