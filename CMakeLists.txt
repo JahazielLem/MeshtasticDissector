@@ -18,6 +18,8 @@ set(PLUGIN_FILES
 	${DISSECTOR_SRC}
 )
 
+find_package(Gcrypt REQUIRED)
+
 target_include_directories(dissectors
 	SYSTEM PRIVATE
 		${GCRYPT_INCLUDE_DIRS}
@@ -36,7 +38,7 @@ register_plugin_files(plugin.c
 
 add_wireshark_plugin_library(meshtastic epan)
 
-target_link_libraries(meshtastic epan)
+target_link_libraries(meshtastic epan ${GCRYPT_LIBRARIES})
 
 install_plugin(meshtastic epan)
 
