@@ -74,8 +74,46 @@ jobs:
       run: |
         cmake --build build --target plugins/epan/meshtastic/install
 
-    - name: Upload artifacts
+    - name: Create ZIP archive (Windows)
+      if: matrix.sys.os == 'windows'
+      run: tar -czf Meshtastic_Wireshark${{ matrix.wireshark }}_${{ matrix.sys.os }}.tar.gz -C dist .
+  
+    - name: Create ZIP archive (Linux/macOS)
+      if: matrix.sys.os != 'windows'
+      run: |
+        zip -r Meshtastic_Wireshark${{ matrix.wireshark }}_${{ matrix.sys.os }}.zip dist/
+      shell: bash
+
+    - name: Upload ZIP artifact (Windows)
+      if: matrix.sys.os == 'windows'
       uses: actions/upload-artifact@v4
       with:
-        name: Meshtastic_Wireshark${{ matrix.wireshark }}_${{ matrix.sys.os }}
-        path: dist/
+        name: Meshtastic_Wireshark${{ matrix.wireshark }}_${{ matrix.sys.os }}.tar.gz
+        path: ./Meshtastic_Wireshark${{ matrix.wireshark }}_${{ matrix.sys.os }}.tar.gz
+  
+    - name: Upload ZIP artifact (Linux/Macos)
+      if: matrix.sys.os != 'windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: Meshtastic_Wireshark${{ matrix.wireshark }}_${{ matrix.sys.os }}.zip
+        path: ./Meshtastic_Wireshark${{ matrix.wireshark }}_${{ matrix.sys.os }}.zip
+  
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Download all ZIP artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./release_zips/
+
+    - name: Release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: ./release_zips/*/*
+        generateReleaseNotes: true
+        draft: true
