@@ -16,7 +16,7 @@ jobs:
           - { os: ubuntu,  shell: bash  }
           - { os: macos,   shell: bash  }
         wireshark:
-          - v4.5.0
+          - v4.4.0
 
     runs-on: ${{ matrix.sys.os }}-latest
 
