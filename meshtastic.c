@@ -31,7 +31,6 @@
  
  // Dissector handles
  static dissector_handle_t handle_meshtastic;
- static dissector_handle_t meshtastic_payload_handle;
  // Protocol handles
  static int proto_meshtastic;
  
@@ -71,13 +70,6 @@
  static int hf_mstic_node_info_mac_addr;
  static int hf_mstic_node_info_hw_model;
  static int hf_mstic_node_info_plubic_key;
- // Portnum 67 - Telemetry
- 
- // static int hf_mstic_telemetry_time;
- // static int hf_mstic_telemetry_dev_battery;
- // static int hf_mstic_telemetry_dev_voltage;
- // static int hf_mstic_telemetry_dev_channel;
- // static int hf_mstic_telemetry_dev_air;
  
  // Subtree pointers
  static int ett_header;
@@ -390,8 +382,12 @@
                                proto_tree* tree,
                                void* data) {
    // For -Werro unused
-   (void)data;
+  //  (void)data;
    int32_t current_offset = 0;
+
+   if (tvb_reported_length(tvb) == 0){
+    return current_offset;
+   }
  
    // Set columns
    col_set_str(pinfo->cinfo, COL_PROTOCOL, "Meshtastic");
@@ -479,8 +475,7 @@
    if (channel_hash == 0x75) {
      tvbuff_t* tvb_payload =
          tvb_new_child_real_data(tvb, payload_data, payload_len, payload_len);
-     call_dissector(meshtastic_payload_handle, tvb_payload, pinfo,
-                    payload_block);
+     dissect_meshtastic_payload(tvb_payload, pinfo, payload_block, data);
      return 0;
    }
  
@@ -493,9 +488,6 @@
    // TODO: Fix subset click a field, point to Frame
    tvbuff_t* tvb_decrypted =
        tvb_new_child_real_data(tvb, payload_data, payload_len, payload_len);
-   // tvb_decrypted =
-   //     tvb_new_subset_length_caplen(tvb_decrypted, 0, payload_len,
-   //     payload_len);
  
    proto_item* pi_decrypted =
        proto_tree_add_item(ti_radio, hf_meshtastic_decrypted_block,
@@ -505,8 +497,7 @@
        proto_item_add_subtree(pi_decrypted, ett_cipher_block);
  
    //  We decrypt the data so we can use the dissector
-   call_dissector(meshtastic_payload_handle, tvb_decrypted, pinfo,
-                  subtree_decrypted);
+   dissect_meshtastic_payload(tvb_decrypted, pinfo, subtree_decrypted, data);
    return 0;
  }
  
@@ -671,9 +662,5 @@
  }
  
  void proto_reg_handoff_meshtastic(void) {
-   meshtastic_payload_handle =
-       create_dissector_handle(dissect_meshtastic_payload, proto_meshtastic);
- 
    dissector_add_uint("wtap_encap", WTAP_ENCAP_USER1, handle_meshtastic);
-   dissector_add_uint("wtap_encap", WTAP_ENCAP_USER1, meshtastic_payload_handle);
  }
